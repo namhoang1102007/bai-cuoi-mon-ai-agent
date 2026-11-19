@@ -1,0 +1,4 @@
+﻿ma_chinh_sach,cap_phe_duyet,nguoi_phu_trach_duyet,gia_tri_don_tu_vnd,gia_tri_don_den_vnd,chiet_khau_toi_da_pct,dieu_kien_ap_dung,sla_phan_hoi_gio
+CS-01,Nhân viên Kinh doanh (NVKD),NVKD Phụ trách trực tiếp,0,300000000,5.0,"Đơn hàng <= 300 triệu VNĐ, chiết khấu <= 5%, đủ tồn kho và kịp tiến độ",2
+CS-02,Trưởng phòng Kinh doanh,Ông Trần Quốc Tuấn - Trưởng phòng KD,300000001,1000000000,10.0,"Đơn hàng > 300 triệu đến 1 tỷ VNĐ, hoặc chiết khấu từ > 5% đến 10%, hoặc cần điều phối tồn kho/tiến độ gấp",4
+CS-03,Ban Giám đốc (Giám đốc Kinh doanh / TGĐ),Bà Nguyễn Minh An - Phó TGĐ Phụ trách KD,1000000001,99999999999,15.0,"Đơn hàng > 1 tỷ VNĐ, hoặc khách đề nghị chiết khấu đặc biệt > 10%, hoặc cam kết SLA phạt hợp đồng",8

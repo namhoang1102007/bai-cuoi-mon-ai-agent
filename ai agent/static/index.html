@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minh An B2B Sales AI Agent — Executive Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      --bg-outer: #e9ecf4;
+      --bg-shell: #f4f6fb;
+      --navy-dark: #0d1226;
+      --amber-main: #f5b027;
+      --coral-main: #f06449;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at 10% 10%, #f1f4fb 0%, #e4e8f2 100%);
+      color: #0d1226;
+      overflow-x: hidden;
+    }
+
+    /* Custom Scrollbar */
+    .custom-scroll::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* Left Navigation Rail Buttons */
+    .nav-rail-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #7c8ba1;
+      transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
+    }
+    .nav-rail-btn:hover {
+      color: #0d1226;
+      background: rgba(255, 255, 255, 0.75);
+      transform: translateY(-2px);
+    }
+    .nav-rail-btn.active {
+      background: #ffffff;
+      color: #0d1226;
+      box-shadow: 0 12px 24px -6px rgba(13, 18, 38, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.9);
+      transform: scale(1.05);
+    }
+
+    /* Bento Cards with Spring Hover & Glass Polish */
+    .bento-card {
+      background: #ffffff;
+      border-radius: 28px;
+      box-shadow: 0 12px 32px -12px rgba(13, 18, 38, 0.06), 0 1px 3px rgba(13, 18, 38, 0.03);
+      border: 1px solid rgba(241, 245, 249, 0.95);
+      transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .bento-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 40px -14px rgba(13, 18, 38, 0.1), 0 2px 6px rgba(13, 18, 38, 0.04);
+    }
+
+    /* Warm Amber Balance Card with Animated Shimmer */
+    .amber-hero-card {
+      background: linear-gradient(135deg, #f7b731 0%, #f5a623 55%, #eb9612 100%);
+      border-radius: 28px;
+      box-shadow: 0 18px 36px -10px rgba(245, 176, 39, 0.42);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.32s ease;
+    }
+    .amber-hero-card:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 24px 44px -10px rgba(245, 176, 39, 0.52);
+    }
+    .amber-hero-card::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      right: -25%;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0) 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: floatOrb 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatOrb {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-18px, 18px) scale(1.12); }
+    }
+
+    /* Soft Gray Right Column Cards */
+    .soft-gray-card {
+      background: #f4f5f9;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 8px 20px -8px rgba(13, 18, 38, 0.04);
+      transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .soft-gray-card:hover {
+      background: #f0f2f8;
+      transform: translateY(-2px);
+    }
+
+    /* Recent Orders Row Animations */
+    .order-row {
+      transition: all 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+      border-radius: 18px;
+    }
+    .order-row:hover {
+      background-color: #f8fafc;
+      transform: translateX(4px);
+    }
+    .order-row.selected {
+      background: linear-gradient(90deg, #fffbeb 0%, #ffffff 100%);
+      box-shadow: inset 4px 0 0 #f5b027, 0 6px 16px -6px rgba(245, 176, 39, 0.2);
+    }
+
+    /* SVG Wave Line Draw Animation */
+    .wave-line-animate {
+      stroke-dasharray: 1600;
+      stroke-dashoffset: 1600;
+      animation: drawWave 1.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .wave-area-animate {
+      opacity: 0;
+      animation: fadeArea 0.9s ease 0.25s forwards;
+    }
+    @keyframes drawWave {
+      to { stroke-dashoffset: 0; }
+    }
+    @keyframes fadeArea {
+      to { opacity: 1; }
+    }
+
+    /* Active Step Pulse in Workflow */
+    .step-glow-active {
+      animation: pulseGlow 2s infinite;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(245, 176, 39, 0.45); }
+      50% { box-shadow: 0 0 0 8px rgba(245, 176, 39, 0); }
+    }
+
+    /* Panel Content Refresh Animation */
+    .panel-pop {
+      animation: panelPopIn 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes panelPopIn {
+      0% { opacity: 0.4; transform: translateY(6px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen p-2 sm:p-4 lg:p-6 flex items-stretch justify-center">
+
+  <!-- FLOATING TOAST NOTIFICATION -->
+  <div id="floatingToast" class="fixed top-5 right-5 z-50 hidden max-w-md transition-all duration-300"></div>
+
+  <!-- =================================================================== -->
+  <!-- OUTER DASHBOARD SHELL (EXACT REFERENCE STRUCTURE & PROPORTIONS)     -->
+  <!-- =================================================================== -->
+  <div class="w-full max-w-[1660px] bg-[#f4f5f9] rounded-[38px] shadow-2xl border-[3px] border-white/90 flex flex-col lg:flex-row overflow-hidden">
+
+    <!-- =============================================================== -->
+    <!-- LEFT VERTICAL ICON SIDEBAR RAIL                                 -->
+    <!-- =============================================================== -->
+    <aside class="w-full lg:w-[92px] bg-[#f4f5f9] py-4 lg:py-8 px-4 flex lg:flex-col items-center justify-between border-b lg:border-b-0 lg:border-r border-slate-200/60 shrink-0">
+      <div class="flex lg:flex-col items-center gap-5 lg:gap-8">
+        <!-- Brand Logo ("B" / "M" Warm Amber Rounded Square) -->
+        <button
+          onclick="switchMainSection('overview')"
+          title="Minh An B2B Sales AI Agent"
+          class="w-13 h-13 w-12 h-12 rounded-2xl bg-white shadow-md flex items-center justify-center text-[#f5b027] font-extrabold text-2xl tracking-tighter hover:rotate-6 hover:scale-110 transition duration-300"
+        >
+          M
+        </button>
+
+        <!-- Vertical Rail Icons -->
+        <nav class="flex lg:flex-col items-center gap-2.5 sm:gap-3.5">
+          <button onclick="switchMainSection('overview')" id="rail-overview" class="nav-rail-btn active" title="Overview Dashboard (Bàn làm việc chính)">
+            <i class="fa-solid fa-table-cells-large text-lg"></i>
+          </button>
+
+          <button onclick="openAndScrollDeepDive()" id="rail-deepdive" class="nav-rail-btn" title="Bảng Thẩm định Chi tiết & Bản nháp Báo giá">
+            <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+          </button>
+
+          <button onclick="switchMainSection('workflow')" id="rail-workflow" class="nav-rail-btn" title="Sơ đồ Quy trình Xử lý Cơ hội B2B">
+            <i class="fa-solid fa-chart-pie text-lg"></i>
+          </button>
+
+          <button onclick="switchMainSection('reps')" id="rail-reps" class="nav-rail-btn" title="Đội ngũ 6 NVKD & Chính sách Duyệt">
+            <i class="fa-regular fa-user text-lg"></i>
+          </button>
+
+          <button onclick="filterOrdersAndFocus('manager')" id="rail-approvals" class="nav-rail-btn" title="Hồ sơ Cần Trưởng phòng / BGĐ Duyệt">
+            <i class="fa-solid fa-inbox text-lg"></i>
+            <span id="railBadgeManager" class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#f06449] text-white text-[10px] font-extrabold flex items-center justify-center shadow-sm">
+              3
+            </span>
+          </button>
+
+          <button onclick="switchMainSection('catalog')" id="rail-catalog" class="nav-rail-btn" title="Danh mục Sản phẩm, Giá 2026 & Tồn kho">
+            <i class="fa-solid fa-briefcase text-lg"></i>
+          </button>
+
+          <button onclick="toggleModal('uploadCenterModal')" id="rail-files" class="nav-rail-btn" title="Tải lên File CSV / XLSX / Google Sheet">
+            <i class="fa-regular fa-folder-open text-lg"></i>
+            <span id="railBadgeTotal" class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#f5b027] text-white text-[10px] font-extrabold flex items-center justify-center shadow-sm">
+              6
+            </span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Bottom Reset Sample Action -->
+      <button onclick="resetSampleData()" class="nav-rail-btn" title="Khôi phục Dữ liệu Mẫu Gốc của Minh An">
+        <i class="fa-solid fa-arrow-right-from-bracket rotate-180 text-lg"></i>
+      </button>
+    </aside>
+
+    <!-- =============================================================== -->
+    <!-- MAIN WHITE ROUNDED WORKSPACE CANVAS                             -->
+    <!-- =============================================================== -->
+    <div class="flex-1 bg-white lg:rounded-l-[38px] p-4 sm:p-6 lg:p-8 flex flex-col justify-between overflow-x-hidden">
+
+      <!-- TOP BAR: SEARCH + DARK PILL ACTION BUTTONS + UTILITY ICONS -->
+      <header class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div class="flex flex-wrap items-center gap-3 flex-1 max-w-4xl">
+          <!-- Pill Search Bar matching reference "search..." -->
+          <div class="relative flex-1 min-w-[240px] group">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#0d1226] text-sm transition"></i>
+            <input
+              type="text"
+              id="globalSearchInput"
+              oninput="handleGlobalSearch(this.value)"
+              placeholder="Tìm kiếm khách hàng, mã hồ sơ (YC-2026...), sản phẩm, NVKD..."
+              class="w-full pl-11 pr-9 py-3 rounded-2xl bg-[#f4f5f9] hover:bg-[#eef0f6] focus:bg-white text-xs sm:text-sm text-slate-800 placeholder-slate-400 border border-transparent focus:border-slate-300 focus:outline-none focus:ring-4 focus:ring-slate-900/5 transition"
+            />
+            <button
+              id="clearSearchBtn"
+              onclick="clearGlobalSearch()"
+              class="hidden absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 text-xs"
+            >
+              <i class="fa-solid fa-circle-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Primary Dark Navy Pill Button ("Add new widget" style) -->
+          <button
+            onclick="toggleModal('uploadCenterModal')"
+            class="px-5 py-3 rounded-2xl bg-[#0d1226] hover:bg-slate-800 active:scale-95 text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2 whitespace-nowrap"
+          >
+            <i class="fa-solid fa-cloud-arrow-up text-[#f5b027]"></i>
+            <span>Tải Dữ liệu (CSV / XLSX / Sheet)</span>
+          </button>
+
+          <!-- Secondary Soft Pill Button -> Simulate New Customer Request -->
+          <button
+            onclick="toggleModal('newRequestModal')"
+            class="px-4 py-3 rounded-2xl bg-[#f4f5f9] hover:bg-[#e8ebf2] active:scale-95 text-[#0d1226] text-xs sm:text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap"
+          >
+            <i class="fa-solid fa-plus text-[#f06449]"></i>
+            <span>+ Yêu cầu Mới</span>
+          </button>
+        </div>
+
+        <!-- Far Right Utility Icons & Profile Avatar -->
+        <div class="flex items-center gap-2.5 sm:gap-3">
+          <button
+            onclick="runLiveStepSimulation()"
+            title="Chạy hiệu ứng mô phỏng AI Agent duyệt từng bước quy trình"
+            class="px-3.5 py-2.5 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/80 text-xs font-extrabold flex items-center gap-1.5 transition active:scale-95"
+          >
+            <i class="fa-solid fa-play text-[#f5b027]"></i>
+            <span class="hidden md:inline">Mô phỏng Luồng AI</span>
+          </button>
+
+          <a
+            href="/api/export-report-xlsx"
+            title="Xuất Báo cáo Tổng hợp Hồ sơ Cơ hội & Báo giá ra file Excel (.xlsx)"
+            class="px-3.5 py-2.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/60 text-xs font-extrabold flex items-center gap-1.5 transition"
+          >
+            <i class="fa-solid fa-file-excel"></i>
+            <span class="hidden md:inline">Xuất Excel</span>
+          </a>
+
+          <button
+            onclick="toggleModal('aiConfigModal')"
+            title="Cấu hình Gemini / OpenAI API Key"
+            class="w-10 h-10 rounded-2xl bg-[#f4f5f9] hover:bg-slate-200 text-slate-600 flex items-center justify-center transition"
+          >
+            <i class="fa-solid fa-gear hover:rotate-90 transition-transform duration-300"></i>
+          </button>
+
+          <button
+            onclick="toggleModal('workflowModal')"
+            title="Xem Sơ đồ Quy trình Gốc Minh An"
+            class="w-10 h-10 rounded-2xl bg-[#f4f5f9] hover:bg-slate-200 text-slate-600 flex items-center justify-center transition relative"
+          >
+            <i class="fa-regular fa-bell"></i>
+            <span class="w-2.5 h-2.5 rounded-full bg-[#f06449] ring-2 ring-white absolute top-2 right-2 animate-pulse"></span>
+          </button>
+
+          <div class="flex items-center gap-2.5 pl-1">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#0d1226] via-slate-800 to-emerald-600 text-white font-extrabold text-xs flex items-center justify-center shadow-md ring-2 ring-amber-400/50">
+              MA
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- ============================================================= -->
+      <!-- SECTION 1: OVERVIEW (EXACT REFERENCE BENTO LAYOUT)            -->
+      <!-- ============================================================= -->
+      <div id="section-overview" class="space-y-6">
+
+        <!-- Section Header + Quick Interactive Customer Switcher Pills -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <h1 class="text-xl font-extrabold text-[#0d1226] tracking-tight">Overview</h1>
+            <span class="text-xs text-slate-400 hidden sm:inline">•</span>
+            <span class="text-xs font-semibold text-slate-500">
+              Hệ thống AI Agent Xử lý Cơ hội Bán hàng B2B — <b class="text-[#0d1226]">Công ty Minh An</b>
+            </span>
+          </div>
+
+          <!-- Quick Customer Selector Chips for effortless 1-click switching -->
+          <div id="quickCustomerChips" class="flex flex-wrap items-center gap-1.5">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- =========================================================== -->
+        <!-- MAIN 12-COLUMN BENTO GRID (EXACT PROPORTIONS OF IMAGE)      -->
+        <!-- =========================================================== -->
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
+
+          <!-- LEFT/CENTER 8 COLUMNS -->
+          <div class="xl:col-span-8 flex flex-col justify-between gap-6">
+
+            <!-- TOP LARGE CARD ("Earnings Calculation" position) -->
+            <div class="bento-card p-6 relative">
+              <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                <div class="flex flex-wrap items-center gap-5">
+                  <h2 class="font-extrabold text-base text-[#0d1226]">
+                    Biểu đồ Tương quan Báo giá & Ngân sách
+                  </h2>
+                  <div class="flex items-center gap-4 text-xs font-bold text-slate-500">
+                    <span class="flex items-center gap-1.5">
+                      <span class="w-3 h-3 rounded-[4px] bg-[#f5b027] inline-block shadow-sm"></span>
+                      Đề xuất Báo giá (Sau CK)
+                    </span>
+                    <span class="flex items-center gap-1.5">
+                      <span class="w-3 h-3 rounded-[4px] bg-[#f06449] inline-block shadow-sm"></span>
+                      Ngân sách Khách hàng
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Right Dark Pill Mode Switcher ("This Week v" style) -->
+                <div class="flex items-center gap-2">
+                  <button
+                    onclick="switchTopHeroMode('chart')"
+                    id="heroBtn-chart"
+                    class="px-4 py-2 rounded-xl bg-[#0d1226] text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5"
+                  >
+                    <i class="fa-solid fa-wave-square text-[#f5b027]"></i>
+                    <span>Biểu đồ Sóng</span>
+                  </button>
+                  <button
+                    onclick="switchTopHeroMode('workflow')"
+                    id="heroBtn-workflow"
+                    class="px-4 py-2 rounded-xl bg-[#f4f5f9] text-slate-600 hover:text-[#0d1226] text-xs font-bold transition flex items-center gap-1.5"
+                  >
+                    <i class="fa-solid fa-diagram-project text-[#f06449]"></i>
+                    <span>Sơ đồ 7 Bước</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Mode A: Interactive Smooth Wave Chart with Hover Tooltip -->
+              <div id="topHeroChartContainer" class="w-full relative">
+                <!-- Populated by JS -->
+              </div>
+
+              <!-- Mode B: Interactive 7-Step Minh An Workflow Trace -->
+              <div id="topHeroWorkflowContainer" class="hidden">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <!-- BOTTOM SPLIT ROW: 2 CARDS SIDE-BY-SIDE ("Earning Details" + "Recent Orders") -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch flex-1">
+
+              <!-- BOTTOM-LEFT CARD (5 Cols): "Earning Details" -> Thẩm định & Báo giá Hồ sơ đang chọn -->
+              <div class="lg:col-span-5 bento-card p-6 flex flex-col justify-between" id="miniDetailCardWrapper">
+                <div>
+                  <div class="flex items-center justify-between gap-2 mb-4">
+                    <h3 class="font-extrabold text-base text-[#0d1226]">Chi tiết Báo giá</h3>
+                    <div class="flex items-center bg-[#f4f5f9] p-1 rounded-xl text-[11px] font-bold">
+                      <button onclick="switchMiniDetailTab('fin')" id="miniTab-fin" class="px-2.5 py-1 rounded-lg bg-[#0d1226] text-white shadow-sm transition">Báo giá</button>
+                      <button onclick="switchMiniDetailTab('guard')" id="miniTab-guard" class="px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition">4 Chốt chặn</button>
+                      <button onclick="switchMiniDetailTab('ops')" id="miniTab-ops" class="px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition">Tồn kho</button>
+                    </div>
+                  </div>
+
+                  <!-- Dynamic Body -->
+                  <div id="miniDetailCardBody"></div>
+                </div>
+
+                <!-- 3 Bottom Summary Numbers matching "$2,090 total sales | $4,860 earnings | $1,470 expenses" -->
+                <div class="grid grid-cols-3 gap-2 pt-4 mt-2 border-t border-slate-100 text-center" id="miniDetailFooterMetrics"></div>
+              </div>
+
+              <!-- BOTTOM-RIGHT CARD (7 Cols): "Recent Orders" -> Danh sách Yêu cầu Khách hàng -->
+              <div class="lg:col-span-7 bento-card p-6 flex flex-col justify-between">
+                <div>
+                  <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                    <div>
+                      <h3 class="font-extrabold text-base text-[#0d1226]">Danh sách Yêu cầu Khách hàng</h3>
+                      <p class="text-[11px] text-slate-400">Nhấp chọn khách hàng để xem Phân tích AI & Bản nháp phản hồi</p>
+                    </div>
+
+                    <!-- Filter Tabs -->
+                    <div class="flex items-center gap-1 bg-[#f4f5f9] p-1 rounded-xl text-[11px] font-bold">
+                      <button onclick="setQueueFilter('all')" id="filter-all" class="px-2.5 py-1 rounded-lg bg-[#0d1226] text-white shadow-sm transition">Tất cả</button>
+                      <button onclick="setQueueFilter('complete')" id="filter-complete" class="px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition">Đủ TT</button>
+                      <button onclick="setQueueFilter('clarify')" id="filter-clarify" class="px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition">Làm rõ</button>
+                      <button onclick="setQueueFilter('manager')" id="filter-manager" class="px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition">Chờ Duyệt</button>
+                    </div>
+                  </div>
+
+                  <!-- Columns Header matching "Customer | Product ID | Amount | Status" -->
+                  <div class="grid grid-cols-12 gap-2 px-3 py-2 text-[11px] font-bold text-slate-400 border-b border-slate-100">
+                    <div class="col-span-5">Khách hàng & NVKD</div>
+                    <div class="col-span-2">Mã Hồ sơ</div>
+                    <div class="col-span-3 text-right">Giá trị Đề xuất</div>
+                    <div class="col-span-2 text-right">Trạng thái</div>
+                  </div>
+
+                  <!-- Customer Order Rows -->
+                  <div id="recentOrdersContainer" class="divide-y divide-slate-50 max-h-[305px] overflow-y-auto custom-scroll mt-1"></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- RIGHT 4 COLUMNS (AMBER CARD + CORAL CARD + 2x3 SALES DETAILS GRID) -->
+          <div class="xl:col-span-4 flex flex-col justify-between gap-6">
+
+            <!-- RIGHT CARD 1: WARM AMBER BALANCE CARD ("CURRENT BALANCE") -->
+            <div class="amber-hero-card text-white p-6">
+              <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-2xl bg-white text-[#f5b027] flex items-center justify-center text-lg shadow-md">
+                  <i class="fa-solid fa-cart-shopping"></i>
+                </div>
+                <span class="px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-[11px] font-extrabold tracking-wide" id="amberBadgeRight">
+                  Bảng giá 2026
+                </span>
+              </div>
+              <div class="text-[11px] font-extrabold uppercase tracking-wider text-white/90" id="amberCardLabel">
+                TỔNG GIÁ TRỊ PIPELINE B2B
+              </div>
+              <div class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1" id="amberCardValue">
+                0 VNĐ
+              </div>
+              <div class="text-xs text-white/95 mt-1.5 font-medium" id="amberCardSub">
+                So với ngân sách khách hàng & tồn kho thực tế
+              </div>
+            </div>
+
+            <!-- RIGHT CARD 2: SOFT GRAY APPROVAL & CONTROL CARD ("ALL EXPENSES") -->
+            <div class="soft-gray-card p-6">
+              <div class="flex items-start justify-between gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-[#f06449] text-white flex items-center justify-center text-lg shadow-md mb-4">
+                  <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <span id="coralCardPolicyBadge" class="px-3 py-1 rounded-xl bg-white text-[#0d1226] text-xs font-extrabold shadow-sm">
+                  CS-02
+                </span>
+              </div>
+              <div class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400" id="coralCardLabel">
+                PHÂN QUYỀN PHÊ DUYỆT • HỒ SƠ ĐANG CHỌN
+              </div>
+              <div class="text-xl sm:text-2xl font-extrabold text-[#0d1226] mt-1" id="coralCardValue">
+                Trưởng phòng KD Duyệt
+              </div>
+              <div class="text-xs text-slate-500 mt-1 font-medium" id="coralCardSub">
+                Người duyệt: Ông Trần Quốc Tuấn (SLA: 4h)
+              </div>
+              <!-- Interactive 1-click Approval or Clarification Action -->
+              <div id="coralCardActionBox" class="mt-3.5 pt-3.5 border-t border-slate-200/80"></div>
+            </div>
+
+            <!-- RIGHT CARD 3: 2x3 METRIC GRID ("Sales Details") -->
+            <div class="soft-gray-card p-6 flex-1 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <h3 class="font-extrabold text-base text-[#0d1226]">Chi tiết Vận hành</h3>
+                  <span class="text-[11px] font-bold text-slate-400">Thời gian thực</span>
+                </div>
+                <select
+                  id="quickRequestSelector"
+                  onchange="selectRequest(this.value)"
+                  class="w-full px-4 py-2.5 rounded-2xl bg-white text-xs font-bold text-[#0d1226] border border-slate-200/80 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0d1226] mb-5 cursor-pointer"
+                ></select>
+              </div>
+
+              <!-- 2x3 Grid matching "Total Views | Total Sales | Referrals | Monthly Increase | Total Comments | Marketing Invest" -->
+              <div class="grid grid-cols-2 divide-x divide-slate-200/90 text-left">
+                <div class="pr-4 space-y-4">
+                  <div>
+                    <div class="text-[11px] font-semibold text-slate-400">Tổng Yêu cầu Tuần</div>
+                    <div class="text-xl font-extrabold text-[#0d1226] mt-0.5" id="gridMetric1">6</div>
+                  </div>
+                  <div class="pt-3.5 border-t border-slate-200/80">
+                    <div class="text-[11px] font-semibold text-slate-400">Cần KH Làm rõ</div>
+                    <div class="text-xl font-extrabold text-[#f06449] mt-0.5" id="gridMetric3">2</div>
+                  </div>
+                  <div class="pt-3.5 border-t border-slate-200/80">
+                    <div class="text-[11px] font-semibold text-slate-400">Số Hạng mục Báo giá</div>
+                    <div class="text-xl font-extrabold text-[#0d1226] mt-0.5" id="gridMetric5">4 SP</div>
+                  </div>
+                </div>
+
+                <div class="pl-4 space-y-4">
+                  <div>
+                    <div class="text-[11px] font-semibold text-slate-400">Đủ TT Lập Hồ sơ</div>
+                    <div class="text-xl font-extrabold text-emerald-600 mt-0.5" id="gridMetric2">4</div>
+                  </div>
+                  <div class="pt-3.5 border-t border-slate-200/80">
+                    <div class="text-[11px] font-semibold text-slate-400">Cần Cấp trên Duyệt</div>
+                    <div class="text-xl font-extrabold text-[#0d1226] mt-0.5" id="gridMetric4">3</div>
+                  </div>
+                  <div class="pt-3.5 border-t border-slate-200/80">
+                    <div class="text-[11px] font-semibold text-slate-400">Thời gian Đáp ứng</div>
+                    <div class="text-xl font-extrabold text-[#0d1226] mt-0.5" id="gridMetric6">5 ngày</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- =========================================================== -->
+        <!-- INTERACTIVE AI AGENT OUTPUT WORKSPACE (DEEP-DIVE SECTION)   -->
+        <!-- =========================================================== -->
+        <div id="activeOpportunityDeepDive" class="pt-2"></div>
+      </div>
+
+      <!-- ============================================================= -->
+      <!-- SECTION 2: ORIGINAL WORKFLOW DIAGRAM & LIVE COMPARISON        -->
+      <!-- ============================================================= -->
+      <div id="section-workflow" class="hidden space-y-6">
+        <div class="bento-card p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div>
+              <h2 class="text-lg font-extrabold text-[#0d1226]">Sơ đồ Quy trình Xử lý Cơ hội Bán hàng B2B — Minh An Company</h2>
+              <p class="text-xs text-slate-400">Quy trình gốc được số hóa 100% vào lõi quyết định của AI Agent</p>
+            </div>
+            <button onclick="switchMainSection('overview')" class="px-4 py-2 rounded-xl bg-[#0d1226] text-white text-xs font-bold">
+              Quay lại Dashboard
+            </button>
+          </div>
+          <div class="bg-[#f4f5f9] rounded-2xl p-4 flex justify-center">
+            <img src="/static/workflow_minh_an.jpg" alt="Sơ đồ Quy trình Minh An" class="max-h-[65vh] rounded-xl shadow object-contain" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================= -->
+      <!-- SECTION 3: PRODUCT CATALOG, 2026 PRICING & INVENTORY          -->
+      <!-- ============================================================= -->
+      <div id="section-catalog" class="hidden space-y-6">
+        <div class="bento-card p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div>
+              <h2 class="text-lg font-extrabold text-[#0d1226]">Danh mục Sản phẩm, Bảng giá Mới nhất 2026 & Tồn kho Khả dụng</h2>
+              <p class="text-xs text-slate-400">Ngăn chặn triệt để lỗi báo giá cũ hoặc hứa thời hạn giao hàng vượt quá tồn kho thực tế</p>
+            </div>
+            <button onclick="switchMainSection('overview')" class="px-4 py-2 rounded-xl bg-[#0d1226] text-white text-xs font-bold">
+              Quay lại Dashboard
+            </button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-[#f4f5f9] text-slate-700 font-bold border-b border-slate-200">
+                  <th class="p-3.5 rounded-l-xl">Mã SP</th>
+                  <th class="p-3.5">Tên Sản phẩm / Dịch vụ</th>
+                  <th class="p-3.5">Nhóm</th>
+                  <th class="p-3.5 text-right">Giá Cũ</th>
+                  <th class="p-3.5 text-right">Giá Niêm yết 2026</th>
+                  <th class="p-3.5 text-center">Tồn khả dụng</th>
+                  <th class="p-3.5 text-center">TG Có sẵn</th>
+                  <th class="p-3.5 text-center">TG Nhập thêm</th>
+                  <th class="p-3.5 text-center rounded-r-xl">Trần CK NVKD / TP</th>
+                </tr>
+              </thead>
+              <tbody id="catalogTableBody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================= -->
+      <!-- SECTION 4: POLICIES & 6 SALES REPS                            -->
+      <!-- ============================================================= -->
+      <div id="section-reps" class="hidden space-y-6">
+        <div class="bento-card p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-lg font-extrabold text-[#0d1226]">Chính sách Chiết khấu & Phân quyền Phê duyệt (CS-01 → CS-03)</h2>
+              <p class="text-xs text-slate-400">Loại bỏ tình trạng chuyển qua lại không rõ người phê duyệt</p>
+            </div>
+            <button onclick="switchMainSection('overview')" class="px-4 py-2 rounded-xl bg-[#0d1226] text-white text-xs font-bold">
+              Quay lại Dashboard
+            </button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-[#f4f5f9] text-slate-700 font-bold border-b border-slate-200">
+                  <th class="p-3.5 rounded-l-xl">Mã CS</th>
+                  <th class="p-3.5">Cấp Phê duyệt</th>
+                  <th class="p-3.5">Người Phê duyệt</th>
+                  <th class="p-3.5">Hạn mức Đơn hàng</th>
+                  <th class="p-3.5 text-center">Trần Chiết khấu</th>
+                  <th class="p-3.5">Điều kiện Áp dụng</th>
+                  <th class="p-3.5 text-center rounded-r-xl">SLA</th>
+                </tr>
+              </thead>
+              <tbody id="policyTableBody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="bento-card p-6">
+          <h3 class="text-base font-extrabold text-[#0d1226] mb-4">Đội ngũ 6 Nhân viên Kinh doanh (NVKD) Tiếp nhận & Theo dõi</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="repsGridContainer"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =================================================================== -->
+  <!-- MODAL 1: UPLOAD CSV / XLSX / GOOGLE SHEET CENTER                    -->
+  <!-- =================================================================== -->
+  <div id="uploadCenterModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-[32px] max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-slate-100 panel-pop">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-[#f5b027]/20 text-[#f5b027] flex items-center justify-center text-lg">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+          </div>
+          <div>
+            <h3 class="font-extrabold text-base text-[#0d1226]">Tải lên Dữ liệu Đầu vào (.CSV, .XLSX hoặc Link Google Sheet)</h3>
+            <p class="text-xs text-slate-400">Hỗ trợ tải file Yêu cầu Khách hàng hoặc bộ file Excel 4 Sheet đầy đủ của Công ty Minh An</p>
+          </div>
+        </div>
+        <button onclick="toggleModal('uploadCenterModal')" class="w-9 h-9 rounded-xl bg-[#f4f5f9] hover:bg-slate-200 flex items-center justify-center text-slate-600">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div class="p-4 rounded-2xl bg-[#f4f5f9] border border-slate-200/80">
+          <div class="font-bold text-slate-800 mb-1 flex items-center justify-between">
+            <span>1. Chọn File từ máy tính (.csv, .xlsx)</span>
+            <span class="text-[11px] text-emerald-600 font-bold">Tự động nhận diện cột</span>
+          </div>
+          <p class="text-slate-500 mb-3">Tải lên danh sách yêu cầu khách hàng hoặc file Excel đa sheet gồm cả Sản phẩm, Tồn kho, Chính sách.</p>
+          <div class="flex flex-wrap items-center gap-2">
+            <input type="file" id="fileUploadInput" accept=".csv,.xlsx,.xls" class="flex-1 text-xs text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-white file:text-[#0d1226] hover:file:bg-slate-100 cursor-pointer" />
+            <button onclick="handleFileUpload()" class="px-5 py-2.5 bg-[#0d1226] hover:bg-slate-800 text-white rounded-xl font-bold shadow-sm transition">
+              <i class="fa-solid fa-bolt text-[#f5b027] mr-1"></i> Phân tích File Ngay
+            </button>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-[#f4f5f9] border border-slate-200/80">
+          <div class="font-bold text-slate-800 mb-1 flex items-center justify-between">
+            <span>2. Dán Đường dẫn Google Sheet</span>
+            <span class="text-[11px] text-blue-600 font-bold">Đồng bộ trực tiếp</span>
+          </div>
+          <p class="text-slate-500 mb-3">Đảm bảo Google Sheet để quyền "Bất kỳ ai có đường liên kết đều có thể xem":</p>
+          <div class="flex items-center gap-2">
+            <input type="url" id="googleSheetInput" placeholder="https://docs.google.com/spreadsheets/d/..." class="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#0d1226]" />
+            <button onclick="handleGoogleSheetLoad()" class="px-5 py-2.5 bg-[#f06449] hover:bg-orange-600 text-white rounded-xl font-bold whitespace-nowrap shadow-sm transition">
+              <i class="fa-solid fa-cloud-arrow-down mr-1"></i> Nạp Google Sheet
+            </button>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <div class="font-bold text-amber-950">Tải bộ dữ liệu mẫu chuẩn Công ty Minh An</div>
+            <div class="text-[11px] text-amber-800">Dùng để kiểm tra cấu trúc cột hoặc chỉnh sửa rồi tải lên lại:</div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <a href="/api/download-sample/full_xlsx" class="px-3 py-2 rounded-xl bg-white text-[#0d1226] font-bold border border-amber-300 shadow-sm hover:bg-amber-100 transition">
+              <i class="fa-solid fa-file-excel text-emerald-600 mr-1"></i>File Mẫu 4 Sheet (.xlsx)
+            </a>
+            <a href="/api/download-sample/requests_csv" class="px-3 py-2 rounded-xl bg-white text-[#0d1226] font-bold border border-amber-300 shadow-sm hover:bg-amber-100 transition">
+              <i class="fa-solid fa-file-csv text-blue-600 mr-1"></i>File Yêu cầu (.csv)
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================================================================== -->
+  <!-- MODAL 2: ORIGINAL WORKFLOW IMAGE                                    -->
+  <!-- =================================================================== -->
+  <div id="workflowModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-[32px] max-w-4xl w-full p-6 shadow-2xl panel-pop">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+        <div>
+          <h3 class="font-extrabold text-base text-[#0d1226]">Sơ đồ Quy trình Xử lý Cơ hội Bán hàng B2B — Minh An Company</h3>
+          <p class="text-xs text-slate-400">Quy trình chuẩn được mô hình hóa trực tiếp vào AI Agent</p>
+        </div>
+        <button onclick="toggleModal('workflowModal')" class="w-9 h-9 rounded-xl bg-[#f4f5f9] hover:bg-slate-200 flex items-center justify-center text-slate-600">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="bg-[#f4f5f9] rounded-2xl p-3 flex justify-center">
+        <img src="/static/workflow_minh_an.jpg" alt="Quy trình xử lý cơ hội bán hàng B2B Minh An" class="max-h-[70vh] rounded-xl object-contain" />
+      </div>
+    </div>
+  </div>
+
+  <!-- =================================================================== -->
+  <!-- MODAL 3: AI API KEY CONFIGURATION                                   -->
+  <!-- =================================================================== -->
+  <div id="aiConfigModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-[32px] max-w-lg w-full p-6 shadow-2xl panel-pop">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+        <h3 class="font-extrabold text-base text-[#0d1226]">Cấu hình Lõi AI Agent (Hybrid Rule + LLM)</h3>
+        <button onclick="toggleModal('aiConfigModal')" class="w-9 h-9 rounded-xl bg-[#f4f5f9] hover:bg-slate-200 flex items-center justify-center text-slate-600">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900">
+          <b>Chế độ Mặc định:</b> Hoạt động tức thì với bộ giải mã NLP tiếng Việt & Engine Kiểm toán Quy tắc Nghiệp vụ Minh An (chính xác 100% về đơn giá 2026, tồn kho, tiến độ và phân quyền).
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Nhà cung cấp LLM (Tùy chọn):</label>
+          <select id="llmProviderSelect" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-[#f4f5f9]">
+            <option value="gemini">Google Gemini API (gemini-2.5-flash)</option>
+            <option value="openai">OpenAI API (gpt-4o-mini)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">API Key (Để trống nếu dùng Engine Tự động Nội bộ):</label>
+          <input type="password" id="llmApiKeyInput" placeholder="Nhập Gemini hoặc OpenAI API Key..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-[#f4f5f9]" />
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 mt-5 pt-3 border-t border-slate-100">
+        <button onclick="toggleModal('aiConfigModal')" class="px-4 py-2 rounded-xl bg-[#f4f5f9] text-xs font-bold text-slate-700">Đóng</button>
+        <button onclick="saveAiConfig()" class="px-5 py-2 rounded-xl bg-[#0d1226] text-xs font-bold text-white">Lưu Cấu hình</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================================================================== -->
+  <!-- MODAL 4: ADD NEW CUSTOMER REQUEST                                   -->
+  <!-- =================================================================== -->
+  <div id="newRequestModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-[32px] max-w-2xl w-full p-6 shadow-2xl panel-pop">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+        <div>
+          <h3 class="font-extrabold text-base text-[#0d1226]">Tiếp nhận Yêu cầu Khách hàng B2B Mới (Email / Biểu mẫu)</h3>
+          <p class="text-xs text-slate-400">AI Agent sẽ tự động bóc tách sản phẩm, số lượng, kiểm tra tồn kho, giá mới nhất và phân luồng phê duyệt</p>
+        </div>
+        <button onclick="toggleModal('newRequestModal')" class="w-9 h-9 rounded-xl bg-[#f4f5f9] hover:bg-slate-200 flex items-center justify-center text-slate-600">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Tên Doanh nghiệp Khách hàng *</label>
+          <input type="text" id="newReqCompany" value="Công ty Cổ phần Sản xuất Điện tử Việt Nhật" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-[#f4f5f9]" />
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Người liên hệ & Chức vụ *</label>
+          <input type="text" id="newReqContact" value="Anh Phạm Quốc Khánh - Trưởng phòng Mua hàng" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-[#f4f5f9]" />
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Email Khách hàng</label>
+          <input type="email" id="newReqEmail" value="khanh.pq@vietnhat-elec.vn" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-[#f4f5f9]" />
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Kênh tiếp nhận</label>
+          <select id="newReqChannel" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-[#f4f5f9]">
+            <option value="Email">Email</option>
+            <option value="Biểu mẫu Web">Biểu mẫu Web</option>
+          </select>
+        </div>
+        <div class="sm:col-span-2">
+          <div class="flex items-center justify-between mb-1">
+            <label class="font-bold text-slate-700">Nội dung Yêu cầu của Khách hàng *</label>
+            <div class="flex gap-1.5">
+              <button type="button" onclick="fillPresetRequest(1)" class="text-[11px] px-2.5 py-0.5 rounded-lg bg-amber-50 text-amber-700 font-bold">Mẫu 1: Đủ TT + Vượt tồn kho</button>
+              <button type="button" onclick="fillPresetRequest(2)" class="text-[11px] px-2.5 py-0.5 rounded-lg bg-rose-50 text-rose-700 font-bold">Mẫu 2: Thiếu SL & Ngân sách</button>
+            </div>
+          </div>
+          <textarea id="newReqContent" rows="4" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-[#f4f5f9]">Chào Minh An, nhà máy bên mình cần báo giá 05 bộ Máy chủ Dell PowerEdge R760xs, 08 chiếc Switch Cisco C9200L 24P, 02 bộ Tường lửa FortiGate 100F và 01 gói dịch vụ triển khai cấu hình hạ tầng mạng. Ngân sách tổng được duyệt là 1.150.000.000 VNĐ, đề nghị chiết khấu 9%. Yêu cầu triển khai bàn giao trong 7 ngày.</textarea>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Ngân sách tổng (VNĐ - để 0 nếu tự bóc tách)</label>
+          <input type="number" id="newReqBudget" value="0" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-[#f4f5f9]" />
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Thời hạn (Ngày)</label>
+            <input type="number" id="newReqDeadline" value="0" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-[#f4f5f9]" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Đề nghị CK (%)</label>
+            <input type="number" step="0.5" id="newReqDiscount" value="0" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-[#f4f5f9]" />
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 mt-5 pt-3 border-t border-slate-100">
+        <button onclick="toggleModal('newRequestModal')" class="px-4 py-2 rounded-xl bg-[#f4f5f9] text-xs font-bold text-slate-700">Hủy</button>
+        <button onclick="submitNewRequest()" class="px-5 py-2 rounded-xl bg-[#0d1226] text-xs font-bold text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-wand-magic-sparkles text-[#f5b027]"></i> Chạy AI Agent Xử lý
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
